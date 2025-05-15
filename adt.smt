@@ -11,12 +11,32 @@
 )
 
 ; Evaluator for Expr
-(define-fun-rec eval ((e Expr) (x Int)) Int
+(define-fun eval0 ((e Expr) (x Int)) Int
   (match e (
       ((var_x) x)
       ((zero) 0)
       ((one) 1)
-      ((plus l r) (+ (eval l x) (eval r x)))
+      ((plus l r) 0)
+    )
+  )
+)
+
+(define-fun eval1 ((e Expr) (x Int)) Int
+  (match e (
+      ((var_x) x)
+      ((zero) 0)
+      ((one) 1)
+      ((plus l r) (+ (eval0 l x) (eval0 r x)))
+    )
+  )
+)
+
+(define-fun eval2 ((e Expr) (x Int)) Int
+  (match e (
+      ((var_x) x)
+      ((zero) 0)
+      ((one) 1)
+      ((plus l r) (+ (eval1 l x) (eval1 r x)))
     )
   )
 )
@@ -48,14 +68,14 @@
 ; behavior on example e0 = (4, 5)
 (declare-const val_t2_e0 Int)
 
-(assert (= val_t2_e0 (eval t2 4)))
+(assert (= val_t2_e0 (eval2 t2 4)))
 (assert (= val_t2_e0 5))
 
 (declare-const val_child1_t2_e0 Int)
 (declare-const val_child2_t2_e0 Int)
 
-(assert (= val_child1_t2_e0 (eval child1_t2 4)))
-(assert (= val_child2_t2_e0 (eval child2_t2 4)))
+(assert (= val_child1_t2_e0 (eval2 child1_t2 4)))
+(assert (= val_child2_t2_e0 (eval2 child2_t2 4)))
 
 ; Behavior w.r.t subtree
 (assert
@@ -66,14 +86,14 @@
 
 ; behavior on example e1 = (1, 2)
 (declare-const val_t2_e1 Int)
-(assert (= val_t2_e1 (eval t2 1)))
+(assert (= val_t2_e1 (eval2 t2 1)))
 (assert (= val_t2_e1 2))
 
 (declare-const val_child1_t2_e1 Int)
 (declare-const val_child2_t2_e1 Int)
 
-(assert (= val_child1_t2_e1 (eval child1_t2 1)))
-(assert (= val_child2_t2_e1 (eval child2_t2 1)))
+(assert (= val_child1_t2_e1 (eval2 child1_t2 1)))
+(assert (= val_child2_t2_e1 (eval2 child2_t2 1)))
 
 ; Behavior w.r.t subtree
 (assert
@@ -83,3 +103,4 @@
 )
 
 (check-sat)
+(get-model)
