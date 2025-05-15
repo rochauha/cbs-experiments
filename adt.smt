@@ -1,5 +1,7 @@
 (set-logic ALL)
 
+(declare-const undef Int)
+
 ; ADT for Expressions
 (declare-datatype Expr
   (
@@ -16,7 +18,7 @@
       ((var_x) x)
       ((zero) 0)
       ((one) 1)
-      ((plus l r) 0)
+      ((plus l r) undef)
     )
   )
 )
