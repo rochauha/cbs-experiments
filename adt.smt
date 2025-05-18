@@ -76,8 +76,8 @@
 (declare-const val_child1_t2_e0 Int)
 (declare-const val_child2_t2_e0 Int)
 
-(assert (= val_child1_t2_e0 (eval2 child1_t2 4)))
-(assert (= val_child2_t2_e0 (eval2 child2_t2 4)))
+(assert (= val_child1_t2_e0 (eval1 child1_t2 4)))
+(assert (= val_child2_t2_e0 (eval1 child2_t2 4)))
 
 ; Behavior w.r.t subtree
 (assert
@@ -94,8 +94,8 @@
 (declare-const val_child1_t2_e1 Int)
 (declare-const val_child2_t2_e1 Int)
 
-(assert (= val_child1_t2_e1 (eval2 child1_t2 1)))
-(assert (= val_child2_t2_e1 (eval2 child2_t2 1)))
+(assert (= val_child1_t2_e1 (eval1 child1_t2 1)))
+(assert (= val_child2_t2_e1 (eval1 child2_t2 1)))
 
 ; Behavior w.r.t subtree
 (assert
