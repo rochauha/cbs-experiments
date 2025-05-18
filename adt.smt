@@ -1,7 +1,5 @@
 (set-logic ALL)
 
-(declare-const undef Int)
-
 ; ADT for Expressions
 (declare-datatype Expr
   (
@@ -13,13 +11,13 @@
 )
 
 ; Evaluator for Expr
+
 (define-fun eval0 ((e Expr) (x Int)) Int
   (match e (
       ((var_x) x)
       ((zero) 0)
       ((one) 1)
-      ((plus l r) undef)
-    )
+      ((plus l r) 0))
   )
 )
 
@@ -55,6 +53,8 @@
 (declare-const child1_t2 Expr)
 (declare-const child2_t2 Expr)
 
+(assert (not (is-plus t0)))
+
 (assert (or (= child1_t2 t0) (= child1_t2 t1)))
 (assert (or (= child2_t2 t0) (= child2_t2 t1)))
 
@@ -67,11 +67,11 @@
 )
 
 ; Behavioral constraints
-; behavior on example e0 = (4, 5)
+; behavior on example e0 = (4, 5). (4, 7) for unsat
 (declare-const val_t2_e0 Int)
 
 (assert (= val_t2_e0 (eval2 t2 4)))
-(assert (= val_t2_e0 5))
+(assert (= val_t2_e0 7))
 
 (declare-const val_child1_t2_e0 Int)
 (declare-const val_child2_t2_e0 Int)
@@ -86,10 +86,10 @@
   )
 )
 
-; behavior on example e1 = (1, 2)
+; behavior on example e1 = (1, 2), (1, 4) for unsat
 (declare-const val_t2_e1 Int)
 (assert (= val_t2_e1 (eval2 t2 1)))
-(assert (= val_t2_e1 2))
+(assert (= val_t2_e1 4))
 
 (declare-const val_child1_t2_e1 Int)
 (declare-const val_child2_t2_e1 Int)
