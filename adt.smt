@@ -12,22 +12,12 @@
 
 ; Evaluator for Expr
 
-(define-fun eval0 ((e Expr) (x Int)) Int
-  (match e (
-      ((var_x) x)
-      ((zero) 0)
-      ((one) 1)
-      ((plus l r) 0))
-  )
-)
-
 (define-fun eval1 ((e Expr) (x Int)) Int
   (match e (
       ((var_x) x)
       ((zero) 0)
       ((one) 1)
-      ((plus l r) (+ (eval0 l x) (eval0 r x)))
-    )
+      ((plus l r) 0))
   )
 )
 
@@ -67,13 +57,20 @@
 (declare-const t1 Expr)
 (declare-const t2 Expr)
 (declare-const t3 Expr)
+(declare-const t4 Expr)
 
-; Structural constraints saying ti can use t0 to ti-1.
+(push 1)
+; Max #child uninterpreted functions that correspond to being non-terminals.
+(assert (not (is-plus t0)))
+(assert (not (is-plus t1)))
+
+; Now, structural constraints saying ti can use t0 to ti-1.
+
+;;;;;;;; T2
 ; for t2
 (declare-const child1_t2 Expr)
 (declare-const child2_t2 Expr)
 
-(assert (not (is-plus t0)))
 
 (assert (or (= child1_t2 t0) (= child1_t2 t1)))
 (assert (or (= child2_t2 t0) (= child2_t2 t1)))
@@ -89,7 +86,6 @@
 ; Behavioral constraints
 ; behavior on example e0 = (4, 7)
 (declare-const val_t2_e0 Int)
-
 (assert (= val_t2_e0 (eval2 t2 4)))
 
 (declare-const val_child1_t2_e0 Int)
@@ -105,10 +101,9 @@
   )
 )
 
-; behavior on example e1 = (1, 4) for unsat
+; behavior on example e1 = (1, 4)
 (declare-const val_t2_e1 Int)
 (assert (= val_t2_e1 (eval2 t2 1)))
-
 
 (declare-const val_child1_t2_e1 Int)
 (declare-const val_child2_t2_e1 Int)
@@ -125,13 +120,14 @@
 
 (push 1)
 
-; final answer for t2
 (assert (= val_t2_e0 7))
 (assert (= val_t2_e1 4))
 (check-sat)
 
 (pop 1)
 
+
+;;;;;;;; T3
 ; now stuff for t3
 (declare-const child1_t3 Expr)
 (declare-const child2_t3 Expr)
@@ -147,10 +143,10 @@
   )
 )
 
+; Behavioral constraints
+; behavior on example e0 = (4, 7)
 (declare-const val_t3_e0 Int)
-
 (assert (= val_t3_e0 (eval3 t3 4)))
-
 
 (declare-const val_child1_t3_e0 Int)
 (declare-const val_child2_t3_e0 Int)
@@ -160,7 +156,7 @@
 
 ; Behavior w.r.t subtree
 (assert
-  (=> (is-plus t2)
+  (=> (is-plus t3)
     (= val_t3_e0 (+ val_child1_t3_e0 val_child2_t3_e0))
   )
 )
@@ -168,13 +164,12 @@
 ; behavior on example e1 = (1, 4)
 (declare-const val_t3_e1 Int)
 (assert (= val_t3_e1 (eval3 t3 1)))
-(assert (= val_t3_e1 4))
 
 (declare-const val_child1_t3_e1 Int)
 (declare-const val_child2_t3_e1 Int)
 
-(assert (= val_child1_t3_e1 (eval1 child1_t3 1)))
-(assert (= val_child2_t3_e1 (eval1 child2_t3 1)))
+(assert (= val_child1_t3_e1 (eval2 child1_t3 1)))
+(assert (= val_child2_t3_e1 (eval2 child2_t3 1)))
 
 ; Behavior w.r.t subtree
 (assert
@@ -183,8 +178,69 @@
   )
 )
 
+(push 1)
+
 (assert (= val_t3_e0 7))
 (assert (= val_t3_e1 4))
+(check-sat)
 
+(pop 1)
+
+
+;;;;;;;; T4
+; now stuff for t4
+(declare-const child1_t4 Expr)
+(declare-const child2_t4 Expr)
+
+(assert (or (= child1_t4 t0) (= child1_t4 t1) (= child1_t4 t2) (= child1_t4 t3)))
+(assert (or (= child2_t4 t0) (= child2_t4 t1) (= child2_t4 t2) (= child2_t4 t3)))
+
+(assert
+  (=> (is-plus t4)
+    (and
+        (= (left t4) child1_t4)
+        (= (right t4) child2_t4))
+  )
+)
+
+; Behavioral constraints
+; behavior on example e0 = (4, 7)
+(declare-const val_t4_e0 Int)
+(assert (= val_t4_e0 (eval4 t4 4)))
+
+(declare-const val_child1_t4_e0 Int)
+(declare-const val_child2_t4_e0 Int)
+
+(assert (= val_child1_t4_e0 (eval3 child1_t4 4)))
+(assert (= val_child2_t4_e0 (eval3 child2_t4 4)))
+
+; Behavior w.r.t subtree
+(assert
+  (=> (is-plus t4)
+    (= val_t4_e0 (+ val_child1_t4_e0 val_child2_t4_e0))
+  )
+)
+
+; behavior on example e1 = (1, 4)
+(declare-const val_t4_e1 Int)
+(assert (= val_t4_e1 (eval4 t4 1)))
+
+(declare-const val_child1_t4_e1 Int)
+(declare-const val_child2_t4_e1 Int)
+
+(assert (= val_child1_t4_e1 (eval3 child1_t4 1)))
+(assert (= val_child2_t4_e1 (eval3 child2_t4 1)))
+
+; Behavior w.r.t subtree
+(assert
+  (=> (is-plus t4)
+    (= val_t4_e1 (+ val_child1_t4_e1 val_child2_t4_e1))
+  )
+)
+
+(push 1)
+
+(assert (= val_t4_e0 7))
+(assert (= val_t4_e1 4))
 (check-sat)
 (get-model)
