@@ -389,8 +389,6 @@
   )
 )
 
-(push 1)
-
 (assert (= val_t4_e0 7))
 (assert (= val_t4_e1 4))
 (check-sat)
